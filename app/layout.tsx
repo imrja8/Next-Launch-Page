@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 
 import { siteConfig } from "@/config/site";
-import { ThemeProvider } from "@/components/theme-provider";
 import "@/app/globals.css";
 
 const inter = Inter({
@@ -37,7 +36,6 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
 };
@@ -48,19 +46,12 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" data-theme={process.env.APP_THEME || "blue"} data-corner={process.env.APP_CORNER || "normal"}>
       <head />
       <body
         className={`${inter.variable} min-h-screen bg-background font-sans antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        {children}
       </body>
     </html>
   );
