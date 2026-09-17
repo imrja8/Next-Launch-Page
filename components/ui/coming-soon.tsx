@@ -1,9 +1,18 @@
 "use client";
 
 import { Fragment, useEffect, useState } from "react";
-import { RiRocket2Line } from "@remixicon/react";
+import { RiRocketLine, RiStarLine, RiFlashlightLine, RiNotification3Line, RiSparkling2Line } from "@remixicon/react";
+import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
+
+const ICON_MAP: Record<string, React.ElementType> = {
+  rocket: RiRocketLine,
+  star: RiStarLine,
+  bolt: RiFlashlightLine,
+  bell: RiNotification3Line,
+  sparkles: RiSparkling2Line,
+};
 type TimeLeft = {
   days: number;
   hours: number;
@@ -34,20 +43,23 @@ const tiles = [
 ] as const;
 
 export type ComingSoonBlockProps = React.HTMLAttributes<HTMLElement> & {
-  tagline?: string;
-  heading?: string;
-  description?: string;
-  targetDate?: string;
+  data: {
+    tagline?: string;
+    taglineIcon?: string;
+    heading?: string;
+    description?: string;
+    targetDate?: string;
+  };
 };
 
 export default function ComingSoonBlock({
   className,
-  tagline,
-  heading,
-  description,
-  targetDate,
+  data,
   ...props
 }: ComingSoonBlockProps) {
+  const { tagline, taglineIcon, heading, description, targetDate } = data;
+  
+  const [mounted, setMounted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => {
     if (targetDate) {
       return getTimeLeft(new Date(targetDate).getTime() - Date.now());
@@ -55,10 +67,17 @@ export default function ComingSoonBlock({
     return getTimeLeft(0);
   });
 
+  const IconComponent = ICON_MAP[taglineIcon || "rocket"] || RiRocketLine;
+
   useEffect(() => {
+    setMounted(true);
     if (!targetDate) return;
 
     const deadline = new Date(targetDate).getTime();
+    
+    // Immediately calculate time on mount to prevent 1s delay
+    setTimeLeft(getTimeLeft(deadline - Date.now()));
+
     const interval = setInterval(() => {
       setTimeLeft(getTimeLeft(deadline - Date.now()));
     }, 1000);
@@ -69,27 +88,42 @@ export default function ComingSoonBlock({
   return (
     <section 
       className={cn(
-        "flex min-h-svh w-full flex-col items-center justify-center gap-8 bg-background px-6 py-12 text-center text-foreground",
+        "flex min-h-svh w-full flex-col items-center justify-center gap-8 bg-transparent z-10 px-6 py-12 text-center text-foreground",
         className
       )}
       {...props}
     >
       <div className="flex flex-col items-center gap-4">
         {tagline && (
-          <span className="flex items-center gap-2 border border-border bg-muted/50 px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-            <RiRocket2Line className="size-3.5" aria-hidden="true" />
+          <motion.span 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="flex items-center gap-2 rounded-[var(--radius-pill)] border border-white/10 bg-white/10 backdrop-blur-md px-3 py-1 text-xs font-medium text-white/80 shadow-sm"
+          >
+            <IconComponent className="size-3.5" aria-hidden="true" />
             {tagline}
-          </span>
+          </motion.span>
         )}
         {heading && (
-          <h1 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
+            className="text-3xl font-bold tracking-tight text-balance sm:text-4xl text-white"
+          >
             {heading}
-          </h1>
+          </motion.h1>
         )}
         {description && (
-          <p className="max-w-md text-sm text-muted-foreground sm:text-base">
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+            className="max-w-md text-sm text-white/80 sm:text-base"
+          >
             {description}
-          </p>
+          </motion.p>
         )}
       </div>
 
@@ -97,24 +131,42 @@ export default function ComingSoonBlock({
         <div className="flex items-center justify-center gap-2 sm:gap-3">
           {tiles.map((tile, index) => (
             <Fragment key={tile.key}>
-              <div className="flex w-16 flex-col overflow-hidden border border-border sm:w-20">
-                <span
-                  suppressHydrationWarning
-                  className="bg-card py-3 font-mono text-3xl font-bold tabular-nums sm:text-4xl"
-                >
-                  {pad(timeLeft[tile.key])}
-                </span>
-                <span className="border-t border-border bg-muted/40 py-1.5 text-[10px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.45, ease: "easeOut" }}
+                className="flex w-16 flex-col overflow-hidden rounded-[var(--radius-card)] border border-white/10 bg-white/5 backdrop-blur-md shadow-sm sm:w-20"
+              >
+                <div className="flex items-center justify-center h-[60px] sm:h-[72px]">
+                  {mounted ? (
+                    <motion.span
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                      className="font-mono text-3xl font-bold tabular-nums sm:text-4xl text-white"
+                    >
+                      {pad(timeLeft[tile.key])}
+                    </motion.span>
+                  ) : (
+                    <span className="font-mono text-3xl font-bold tabular-nums sm:text-4xl text-transparent">
+                      00
+                    </span>
+                  )}
+                </div>
+                <span className="border-t border-white/10 bg-white/5 py-1.5 text-[10px] font-medium tracking-[0.12em] text-white/70 uppercase">
                   {tile.label}
                 </span>
-              </div>
+              </motion.div>
               {index < tiles.length - 1 && (
-                <span
+                <motion.span
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.45, ease: "easeOut" }}
                   aria-hidden="true"
                   className="font-mono text-2xl font-bold text-muted-foreground/30 sm:text-3xl"
                 >
                   :
-                </span>
+                </motion.span>
               )}
             </Fragment>
           ))}

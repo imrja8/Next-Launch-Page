@@ -5,6 +5,7 @@ export const siteConfig = {
   favicon: process.env.APP_FAVICON_URL,
   content: {
     tagline: process.env.TAGLINE,
+    taglineIcon: process.env.TAGLINE_ICON,
     heading: process.env.HEADING,
     description: process.env.DESCRIPTION,
     targetDate: process.env.TARGET_DATE,
