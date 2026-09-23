@@ -2,6 +2,8 @@ import { siteConfig } from "@/config/site";
 import ComingSoonBlock from "@/components/ui/coming-soon";
 import { GlassBackground } from "@/components/ui/glass-background";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <main className="relative flex min-h-screen flex-col overflow-hidden">
@@ -10,3 +12,4 @@ export default function Home() {
     </main>
   );
 }
+
