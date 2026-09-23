@@ -59,7 +59,6 @@ export default function ComingSoonBlock({
 }: ComingSoonBlockProps) {
   const { tagline, taglineIcon, heading, description, targetDate } = data;
   
-  const [mounted, setMounted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => {
     if (targetDate) {
       return getTimeLeft(new Date(targetDate).getTime() - Date.now());
@@ -70,7 +69,6 @@ export default function ComingSoonBlock({
   const IconComponent = ICON_MAP[taglineIcon || "rocket"] || RiRocketLine;
 
   useEffect(() => {
-    setMounted(true);
     if (!targetDate) return;
 
     const deadline = new Date(targetDate).getTime();
@@ -96,7 +94,7 @@ export default function ComingSoonBlock({
       <div className="flex flex-col items-center gap-4">
         {tagline && (
           <motion.span 
-            initial={{ opacity: 0, y: 20 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="flex items-center gap-2 rounded-[var(--radius-pill)] border border-white/10 bg-white/10 backdrop-blur-md px-3 py-1 text-xs font-medium text-white/80 shadow-sm"
@@ -107,7 +105,7 @@ export default function ComingSoonBlock({
         )}
         {heading && (
           <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" }}
             className="text-3xl font-bold tracking-tight text-balance sm:text-4xl text-white"
@@ -117,7 +115,7 @@ export default function ComingSoonBlock({
         )}
         {description && (
           <motion.p 
-            initial={{ opacity: 0, y: 20 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
             className="max-w-md text-sm text-white/80 sm:text-base"
@@ -132,26 +130,15 @@ export default function ComingSoonBlock({
           {tiles.map((tile, index) => (
             <Fragment key={tile.key}>
               <motion.div 
-                initial={{ opacity: 0, y: 20 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.45, ease: "easeOut" }}
                 className="flex w-16 flex-col overflow-hidden rounded-[var(--radius-card)] border border-white/10 bg-white/5 backdrop-blur-md shadow-sm sm:w-20"
               >
                 <div className="flex items-center justify-center h-[60px] sm:h-[72px]">
-                  {mounted ? (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.5 }}
-                      className="font-mono text-3xl font-bold tabular-nums sm:text-4xl text-white"
-                    >
-                      {pad(timeLeft[tile.key])}
-                    </motion.span>
-                  ) : (
-                    <span className="font-mono text-3xl font-bold tabular-nums sm:text-4xl text-transparent">
-                      00
-                    </span>
-                  )}
+                  <span className="font-mono text-3xl font-bold tabular-nums sm:text-4xl text-white">
+                    {pad(timeLeft[tile.key])}
+                  </span>
                 </div>
                 <span className="border-t border-white/10 bg-white/5 py-1.5 text-[10px] font-medium tracking-[0.12em] text-white/70 uppercase">
                   {tile.label}
@@ -159,7 +146,7 @@ export default function ComingSoonBlock({
               </motion.div>
               {index < tiles.length - 1 && (
                 <motion.span
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={false}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.45, ease: "easeOut" }}
                   aria-hidden="true"

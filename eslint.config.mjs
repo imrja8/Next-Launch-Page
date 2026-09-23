@@ -22,6 +22,11 @@ export default [
       "@next/next": nextPlugin,
       "@typescript-eslint": tsPlugin,
     },
+    settings: {
+      react: {
+        version: "detect",
+      },
+    },
     rules: {
       ...reactPlugin.configs.recommended.rules,
       ...nextPlugin.configs.recommended.rules,
