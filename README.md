@@ -73,3 +73,5 @@ docker build -t coming-soon-page .
 # Run the container with your environment variables
 docker run -p 8888:8888 --env-file .env coming-soon-page
 ```
+
+Test
